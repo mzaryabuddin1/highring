@@ -61,6 +61,14 @@ const jobs = sequelize.define('jobs', {
       type: DataTypes.BOOLEAN,
       defaultValue: false,
       allowNull: false
+    },
+    latitude: {
+        type: DataTypes.FLOAT,
+        allowNull: true
+    },
+    longitude: {
+        type: DataTypes.FLOAT,
+        allowNull: true
     }
 });
 

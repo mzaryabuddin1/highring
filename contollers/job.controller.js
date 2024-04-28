@@ -8,7 +8,7 @@ const {
 const app_users = require('../models/users');
 
 const jobCtrl = {
-    register: async (req, res) => {
+    add: async (req, res) => {
         try {
             const { first_name, last_name, phone, email, alternate_email, password, terms_and_conditions, user_type } = req.body
 
