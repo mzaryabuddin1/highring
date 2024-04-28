@@ -21,6 +21,7 @@ const server = http.createServer(app);
 
 // ROUTES
 app.use('/api/user', require('./routes/userRoutes'))
+app.use('/api/job', require('./routes/jobRoutes'))
 app.get("/", (req, res) => { res.status(200).json({ success: 1, msg: "Live!" }) })
 
 sequelize.sync()

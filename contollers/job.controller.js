@@ -1,4 +1,3 @@
-const jwt = require('jsonwebtoken')
 const md5 = require('md5');
 const { ValidationError, Op, Sequelize, QueryTypes, where } = require('sequelize')
 const {
@@ -8,7 +7,7 @@ const {
 } = require('../helper/functions');
 const app_users = require('../models/users');
 
-const userCtrl = {
+const jobCtrl = {
     register: async (req, res) => {
         try {
             const { first_name, last_name, phone, email, alternate_email, password, terms_and_conditions, user_type } = req.body
@@ -82,10 +81,9 @@ const userCtrl = {
 
             const passwordhash = md5(password)
             let data = await app_users.findOne({ where : { phone }, attributes:{ exclude : ["alternate_email", "status", "terms_and_conditions","otp","otp_expired","otp_used","createdAt","updatedAt"]} })
+            data = data.toJSON()
             if (!data)
                 return res.status(400).json({ error: "Validation error", details: [{ message: "This phone number does not exists, please register first!" }] })
-            
-            data = data.toJSON()
 
             if (data.password !== passwordhash)
                 return res.status(400).json({ error: "Validation error", details: [{ message: "Incorrect password!" }] })
@@ -109,8 +107,5 @@ const userCtrl = {
     }
 }
 
-const createAccessToken = (payload) => {
-    return jwt.sign(payload, process.env.ACCESS_TOKEN_SECRET, { expiresIn: '1d' })
-}
 
-module.exports = userCtrl 
+module.exports = jobCtrl 
