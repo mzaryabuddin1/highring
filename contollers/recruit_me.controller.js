@@ -3,6 +3,12 @@ const { ValidationError, Op, Sequelize, QueryTypes, where } = require('sequelize
 
 const user_jobs = require('../models/jobs');
 
+// [Op.and]: Sequelize.literal(`
+// ST_Distance_Sphere(
+//     POINT(latitude, longitude),
+//     POINT(${latitude}, ${longitude})
+// ) <= ${radius * 1000} -- converting radius from kilometers to meters
+// `)
 const userCtrl = {
 
     get: async (req, res) => {
@@ -28,13 +34,7 @@ const userCtrl = {
                 const jobs = await user_jobs.findAll({
                     attributes: ['id', 'skills_requirement', 'latitude', 'longitude', 'job_types', 'job_location', 'shift', 'working_hours', 'off_days', 'job_tenure', 'experience_requirement', 'other_info', 'facilities'],
                     where: {
-                        status: 1, // Filter by status = 1
-                        [Op.and]: Sequelize.literal(`
-                            ST_Distance_Sphere(
-                                POINT(latitude, longitude),
-                                POINT(${latitude}, ${longitude})
-                            ) <= ${radius * 1000} -- converting radius from kilometers to meters
-                        `)
+                        status: 1
                     },
                     order: [
                         [Sequelize.literal(`SQRT(POW((latitude - ${latitude}), 2) + POW((longitude - ${longitude}), 2))`), 'ASC']
