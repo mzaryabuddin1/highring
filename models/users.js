@@ -27,13 +27,13 @@ const app_users = sequelize.define('app_users', {
         }
     },
     alternate_email: {
-      type: DataTypes.STRING,
-      allowNull: true,
-      validates: {
-          isEmail: {
-              msg: 'Please provide a correct alternate email.'
-          }
-      }
+        type: DataTypes.STRING,
+        allowNull: true,
+        validates: {
+            isEmail: {
+                msg: 'Please provide a correct alternate email.'
+            }
+        }
     },
     password: {
         type: DataTypes.STRING,
@@ -44,10 +44,10 @@ const app_users = sequelize.define('app_users', {
         defaultValue: true
     },
     terms_and_conditions: {
-      type: DataTypes.BOOLEAN,
-      defaultValue: false
+        type: DataTypes.BOOLEAN,
+        defaultValue: false
     },
-    profile_picture : {
+    profile_picture: {
         type: DataTypes.STRING,
         allowNull: false,
         validate: {
@@ -79,6 +79,44 @@ const app_users = sequelize.define('app_users', {
                 msg: 'Invalid user type.'
             }
         }
+    },
+    documents: {
+        type: DataTypes.STRING,
+        allowNull: true,
+        defaultValue: null
+
+    },
+    cv: {
+        type: DataTypes.STRING,
+        allowNull: true,
+        defaultValue: null
+
+    },
+    city: {
+        type: DataTypes.INTEGER,
+        allowNull: true,
+        defaultValue: null
+
+    },
+    country: {
+        type: DataTypes.INTEGER,
+        allowNull: true,
+        defaultValue: null
+
+    },
+    latitude: {
+        type: DataTypes.FLOAT,
+        allowNull: true
+    },
+    longitude: {
+        type: DataTypes.FLOAT,
+        allowNull: true
+    },
+    currency_id: {
+        type: DataTypes.INTEGER,
+        allowNull: true,
+        defaultValue: 1
+
     }
 });
 
