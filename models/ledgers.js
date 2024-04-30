@@ -2,9 +2,23 @@ const { DataTypes } = require('sequelize');
 const sequelize = require('../config/database');
 
 const ledgers = sequelize.define('ledgers', {
-    schedule_id: {
+    user_type: {
+        type: DataTypes.ENUM('employee', 'employer'),
+        allowNull: true,
+        validate: {
+            isIn: {
+                args: [['employee', 'employer']],
+                msg: 'Invalid user type.'
+            }
+        }
+    },
+    user_id: {
         type: DataTypes.INTEGER,
         allowNull: false
+    },
+    schedule_id: {
+        type: DataTypes.INTEGER,
+        allowNull: true
     },
     dated: {
         type: DataTypes.DATE,
@@ -15,11 +29,6 @@ const ledgers = sequelize.define('ledgers', {
         allowNull: true
     },
     transaction_type: {
-        type: DataTypes.BOOLEAN,
-        defaultValue: false,
-        allowNull: false
-    },
-    is_reached: {
         type: DataTypes.BOOLEAN,
         defaultValue: false,
         allowNull: false
