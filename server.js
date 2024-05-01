@@ -24,6 +24,8 @@ app.use('/api/user', require('./routes/userRoutes'))
 app.use('/api/job', require('./routes/jobRoutes'))
 app.use('/api/recruit', require('./routes/recruitMeRoutes'))
 app.use('/api/feilds', require('./routes/feildsRoutes'))
+app.use('/api/designations', require('./routes/designationsRoutes'))
+
 app.get("/", (req, res) => { res.status(200).json({ success: 1, msg: "Live!" }) })
 
 sequelize.sync()
