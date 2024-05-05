@@ -95,13 +95,13 @@ const app_users = sequelize.define('app_users', {
     city: {
         type: DataTypes.INTEGER,
         allowNull: true,
-        defaultValue: null
+        defaultValue: 1
 
     },
     country: {
         type: DataTypes.INTEGER,
         allowNull: true,
-        defaultValue: null
+        defaultValue: 1
 
     },
     latitude: {

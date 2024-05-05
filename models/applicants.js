@@ -28,6 +28,17 @@ const applicants = sequelize.define('applicants', {
         defaultValue: false,
         allowNull: false
     },
+    status: {
+        type: DataTypes.ENUM('pending', 'accepted', 'rejected'),
+        allowNull: false,
+        defaultValue: 'pending',
+        validate: {
+            isIn: {
+                args: [['pending', 'accepted', 'rejected']],
+                msg: 'Invalid status.'
+            }
+        }
+    },
     is_hired: {
         type: DataTypes.BOOLEAN,
         defaultValue: false,
