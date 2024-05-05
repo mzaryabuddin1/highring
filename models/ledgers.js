@@ -1,6 +1,9 @@
 const { DataTypes } = require('sequelize');
 const sequelize = require('../config/database');
 
+const users = require('./users');
+const schedules = require('./schedules');
+
 const ledgers = sequelize.define('ledgers', {
     user_type: {
         type: DataTypes.ENUM('employee', 'employer'),

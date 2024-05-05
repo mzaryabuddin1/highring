@@ -1,6 +1,8 @@
 const { DataTypes } = require('sequelize');
 const sequelize = require('../config/database');
 
+const applicants = require('./applicants');
+
 const jobs = sequelize.define('jobs', {
     created_by: {
         type: DataTypes.INTEGER,
@@ -85,5 +87,9 @@ const jobs = sequelize.define('jobs', {
         allowNull: false
     }
 });
+
+jobs.associate = models => {
+    jobs.hasMany(models.applicants, { foreignKey: 'user_id', as: 'applicants' });
+};
 
 module.exports = jobs;
