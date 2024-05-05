@@ -9,6 +9,7 @@ const app_users = require('../models/users');
 const designations = require('../models/designations');
 const feilds = require('../models/feilds');
 const JOBS = require('../models/jobs');
+const applicants = require('../models/applicants');
 
 const jobCtrl = {
     add: async (req, res) => {
@@ -110,6 +111,38 @@ const jobCtrl = {
             await record.update(req.body)
 
             return res.status(200).json({success: 1, msg: "Fetched", data: record})
+
+        } catch (err) {
+            if (err instanceof ValidationError) {
+                const errorMessages = err.errors.map(err => ({
+                    message: err.message,
+                }));
+                return res.status(400).json({ error: "Validation error", details: errorMessages });
+            }
+
+            return res.status(500).json({ error: "Something Bad happened", details: [{ message: err.message }] })
+        }
+    },
+    apply: async(req , res) => {
+        try{
+            const { user_id } = req
+            const { job_id } = req.params
+            const { salary_expected, other_comments } = req.body
+
+            if(!user_id, !job_id, !salary_expected){
+                return res.status(400).json({ error: "Validation error", details: [{ message: "All fields required" }] })
+            }
+
+            const already_applied = await applicants.findOne({ where: {job_id: job_id, user_id: user_id}})
+
+            if( already_applied )
+                return res.status(400).json({ error: "Validation error", details: [{ message: "Already Applied" }] })
+
+            const newApplication = { job_id, user_id, salary_expected, other_comments }
+
+            await applicants.create(newApplication)
+
+            return res.status(200).json({success: 1, msg: "Applied Successfully"})
 
         } catch (err) {
             if (err instanceof ValidationError) {
