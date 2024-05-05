@@ -33,6 +33,9 @@ const appauth = (req, res, next) => {
                 if (!record.status)
                     return res.status(401).json({ error: "User deactivated, Please contact with administrator!" });
 
+                req.user_id = record.id
+                req.user_type = record.user_type
+
                 next();
             } catch (err) {
                 return res.status(500).json({ error: "Validation error", details: [{ msg: "Server Error" }] })

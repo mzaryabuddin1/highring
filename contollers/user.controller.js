@@ -7,6 +7,7 @@ const {
     isValidEmail
 } = require('../helper/functions');
 const app_users = require('../models/users');
+const JOBS = require('../models/jobs');
 
 const userCtrl = {
     register: async (req, res) => {
@@ -107,6 +108,7 @@ const userCtrl = {
             return res.status(500).json({ error: "Something Bad happened", details: [{ message: err.message }] })
         }
     }
+    
 }
 
 const createAccessToken = (payload) => {
