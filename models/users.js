@@ -1,6 +1,8 @@
 const { DataTypes } = require('sequelize');
 const sequelize = require('../config/database');
 
+const applicants = require('./applicants');
+
 const app_users = sequelize.define('app_users', {
     first_name: {
         type: DataTypes.STRING,
@@ -119,5 +121,9 @@ const app_users = sequelize.define('app_users', {
 
     }
 });
+
+app_users.associate = models => {
+    app_users.hasMany(models.applicants, { foreignKey: 'user_id', as: 'applicants' });
+};
 
 module.exports = app_users;
