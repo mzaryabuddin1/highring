@@ -28,7 +28,7 @@ const userCtrl = {
 
             } else {
                 if (!latitude || !longitude )
-                return res.status(400).json({ error: "Validation error", details: [{ message: "All fields required" }] })
+                    return res.status(400).json({ error: "Validation error", details: [{ message: "All fields required" }] })
 
                 const radius = 5; // in kilometers
                 const jobs = await user_jobs.findAll({

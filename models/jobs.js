@@ -17,7 +17,12 @@ const jobs = sequelize.define('jobs', {
     },
     job_location: {
         type: DataTypes.STRING,
-        allowNull: true
+        allowNull: false
+        // Remote, Onsite
+    },
+    offer_price: {
+        type: DataTypes.INTEGER,
+        allowNull: false
         // Remote, Onsite
     },
     shift: {
@@ -38,7 +43,7 @@ const jobs = sequelize.define('jobs', {
     },
     skills_requirement: {
         type: DataTypes.TEXT,
-        allowNull: true
+        allowNull: false
     },
     experience_requirement: {
         type: DataTypes.TEXT,
@@ -57,18 +62,27 @@ const jobs = sequelize.define('jobs', {
         defaultValue: false,
         allowNull: false
     },
+    reject_reason: {
+        type: DataTypes.STRING,
+        allowNull: true
+    },
     is_approved: {
+      type: DataTypes.BOOLEAN,
+      defaultValue: false,
+      allowNull: false
+    },
+    is_archived: {
       type: DataTypes.BOOLEAN,
       defaultValue: false,
       allowNull: false
     },
     latitude: {
         type: DataTypes.FLOAT,
-        allowNull: true
+        allowNull: false
     },
     longitude: {
         type: DataTypes.FLOAT,
-        allowNull: true
+        allowNull: false
     }
 });
 

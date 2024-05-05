@@ -8,33 +8,54 @@ const {
 const app_users = require('../models/users');
 const designations = require('../models/designations');
 const feilds = require('../models/feilds');
-const jobs = require('../models/jobs');
+const JOBS = require('../models/jobs');
 
 const jobCtrl = {
     add: async (req, res) => {
-        try {
-            const { designation, job_types, job_location, shift, working_hours, off_days, job_tenure, skills_requirement, experience_requirement, other_info, facilities, latitude, longitude } = req.body
+        try{
+            const { user_id } = req
+            let { designation, job_types ,job_location, offer_price, shift,working_hours,off_days,job_tenure,skills_requirement ,experience_requirement,other_info ,facilities ,latitude,longitude } = req.body
 
-            if (!first_name || !last_name || !phone || !password || !terms_and_conditions || !user_type )
+            if(!designation, !job_types, !job_location, !offer_price, !skills_requirement, !latitude, !longitude){
                 return res.status(400).json({ error: "Validation error", details: [{ message: "All fields required" }] })
+            }
 
-            if (!validatePassword(password))
-                return res.status(400).json({ error: "Validation error!", details: [{ message: "Password must be atleast 6 Characters long, contains captial Letter and special character." }] })
+            job_location = JSON.stringify(job_location)
+            job_types = JSON.stringify(job_types)
+            off_days = JSON.stringify(off_days)
+            shift = JSON.stringify(shift)
+            skills_requirement = JSON.stringify(skills_requirement)
+            facilities = JSON.stringify(facilities)
 
-            // Validate phone number as MSISDN
-            const msisdnRegex = /^\+?[1-9]\d{1,14}$/; // Regex for MSISDN format
-            if (!msisdnRegex.test(phone))
-                return res.status(400).json({ error: "Validation error", details: [{ message: "Invalid phone number format" }] });
+            const newJob = { created_by: user_id, designation, job_types ,job_location, offer_price, shift,working_hours,off_days,job_tenure,skills_requirement ,experience_requirement,other_info ,facilities ,latitude,longitude }
 
-            const passwordHash = md5(password)
+            const record = await JOBS.create(newJob)
 
-            const newUser = { first_name, last_name, phone, email, alternate_email, password: passwordHash, terms_and_conditions, user_type }
+            return res.status(200).json({success: 1, msg: "Created Successfully", data: record})
 
-            const record = await app_users.create(newUser)
+        } catch (err) {
+            if (err instanceof ValidationError) {
+                const errorMessages = err.errors.map(err => ({
+                    message: err.message,
+                }));
+                return res.status(400).json({ error: "Validation error", details: errorMessages });
+            }
 
-            const access_token = createAccessToken({ id: record.id })
-            
-            return res.status(200).json({success: 1, msg: "Created Successfully", access_token})
+            return res.status(500).json({ error: "Something Bad happened", details: [{ message: err.message }] })
+        }
+
+    },
+    get: async(req , res) => {
+        try{
+
+            const { job_id } = req.params
+
+            const record = await JOBS.findOne({ where: { id: job_id } })
+            if(!record) {
+                return res.status(400).json({ error: "Validation error", details: [{ message: "No record found" }] })
+            }
+
+            return res.status(200).json({success: 1, msg: "Fetched", data: record})
 
         } catch (err) {
             if (err instanceof ValidationError) {
@@ -47,13 +68,15 @@ const jobCtrl = {
             return res.status(500).json({ error: "Something Bad happened", details: [{ message: err.message }] })
         }
     },
-    get: async (req, res) => {
-        try {
-            const { id } = req.user
-            
-            const data = await app_users.findOne({ where : { id }, attributes : ["first_name", "last_name", "phone", "email", "alternate_email", "profile_picture", "user_type", "id"] })
-            
-            return res.status(200).json({success: 1, msg: "Fetched", data})
+    getAll: async(req , res) => {
+        try{
+
+
+            const { user_id } = req
+
+            const record = await JOBS.findAll({ where: { created_by: user_id } })
+
+            return res.status(200).json({success: 1, msg: "Fetched", data: record})
 
         } catch (err) {
             if (err instanceof ValidationError) {
@@ -66,36 +89,27 @@ const jobCtrl = {
             return res.status(500).json({ error: "Something Bad happened", details: [{ message: err.message }] })
         }
     },
-    login: async (req, res) => {
-        try {
-            const { phone, password } = req.body
-
-            if (!phone || !password )
-                return res.status(400).json({ error: "Validation error", details: [{ message: "All fields required" }] })
-
-            if (!validatePassword(password))
-                return res.status(400).json({ error: "Validation error!", details: [{ message: "Password must be atleast 6 Characters long, contains captial Letter and special character." }] })
-
-            // Validate phone number as MSISDN
-            const msisdnRegex = /^\+?[1-9]\d{1,14}$/; // Regex for MSISDN format
-            if (!msisdnRegex.test(phone))
-                return res.status(400).json({ error: "Validation error", details: [{ message: "Invalid phone number format" }] });
+    update: async(req , res) => {
+        try{
 
 
-            const passwordhash = md5(password)
-            let data = await app_users.findOne({ where : { phone }, attributes:{ exclude : ["alternate_email", "status", "terms_and_conditions","otp","otp_expired","otp_used","createdAt","updatedAt"]} })
-            data = data.toJSON()
-            if (!data)
-                return res.status(400).json({ error: "Validation error", details: [{ message: "This phone number does not exists, please register first!" }] })
+            const { user_id } = req
+            const { job_id } = req.params
 
-            if (data.password !== passwordhash)
-                return res.status(400).json({ error: "Validation error", details: [{ message: "Incorrect password!" }] })
+            const blockedKeys = ['is_approved', 'createdAt', 'created_by'];
+            const hasBlockedKeys = Object.keys(req.body).some(key => blockedKeys.includes(key));
+            if (hasBlockedKeys) {
+                return res.status(400).json({ error: "Validation error", details: [{ message: "Such keys not allowed " + JSON.stringify(blockedKeys) }] });
+            }
 
-            const access_token = createAccessToken({ id: data.id })
-            
-            delete data.password
+            const record = await JOBS.findOne({ where: { id: job_id, created_by: user_id } })
 
-            return res.status(200).json({success: 1, msg: "Fetched", data, access_token })
+            if(!record)
+                return res.status(404).json({ error: "Validation error", details: [{ message: "Job not found"}]})
+
+            await record.update(req.body)
+
+            return res.status(200).json({success: 1, msg: "Fetched", data: record})
 
         } catch (err) {
             if (err instanceof ValidationError) {
@@ -108,6 +122,7 @@ const jobCtrl = {
             return res.status(500).json({ error: "Something Bad happened", details: [{ message: err.message }] })
         }
     }
+
 }
 
 
